@@ -912,22 +912,10 @@ if selected_genres:
 
 
 filtered_data = filtered_data[
-
-    filtered_data[
-        "Attendance_Numbers"
-    ].between(
-
+    filtered_data["Attendance_Numbers"].between(
         attendance_range[0],
         attendance_range[1]
-
     )
-
-    |
-
-    filtered_data[
-        "Attendance_Numbers"
-    ].isna()
-
 ]
 
 
@@ -1034,10 +1022,12 @@ st.subheader(
     "1. Average Festival Attendance by Country"
 )
 
-
 country_attendance = (
 
     filtered_data
+    .dropna(
+        subset=["Attendance_Numbers"]
+    )
     .groupby(
         "Location"
     )[
@@ -1052,33 +1042,34 @@ country_attendance = (
 
 )
 
+if country_attendance.empty:
 
-fig1, ax1 = plt.subplots()
+    st.info(
+        "No attendance data is available for the selected filters."
+    )
 
+else:
 
-country_attendance.plot(
-    kind="barh",
-    ax=ax1
-)
+    fig1, ax1 = plt.subplots()
 
+    country_attendance.plot(
+        kind="barh",
+        ax=ax1
+    )
 
-ax1.set_title(
-    "Top 10 Countries by Average Festival Attendance"
-)
+    ax1.set_title(
+        "Top 10 Countries by Average Festival Attendance"
+    )
 
-ax1.set_xlabel(
-    "Average Attendance"
-)
+    ax1.set_xlabel(
+        "Average Attendance"
+    )
 
-ax1.set_ylabel(
-    "Country"
-)
+    ax1.set_ylabel(
+        "Country"
+    )
 
-
-st.pyplot(
-    fig1
-)
-
+    st.pyplot(fig1)
 
 # ============================================================
 # VISUALIZATION 2
@@ -1089,10 +1080,12 @@ st.subheader(
     "2. Music Genres by Average Economic Impact"
 )
 
-
 genre_impact = (
 
     filtered_data
+    .dropna(
+        subset=["Economic_Impact_USD_Millions"]
+    )
     .groupby(
         "Music_Genre"
     )[
@@ -1107,33 +1100,34 @@ genre_impact = (
 
 )
 
+if genre_impact.empty:
 
-fig2, ax2 = plt.subplots()
+    st.info(
+        "No economic impact data is available for the selected filters."
+    )
 
+else:
 
-genre_impact.plot(
-    kind="barh",
-    ax=ax2
-)
+    fig2, ax2 = plt.subplots()
 
+    genre_impact.plot(
+        kind="barh",
+        ax=ax2
+    )
 
-ax2.set_title(
-    "Top 10 Genres by Average Economic Impact"
-)
+    ax2.set_title(
+        "Top 10 Genres by Average Economic Impact"
+    )
 
-ax2.set_xlabel(
-    "Average Economic Impact (USD Millions)"
-)
+    ax2.set_xlabel(
+        "Average Economic Impact (USD Millions)"
+    )
 
-ax2.set_ylabel(
-    "Music Genre"
-)
+    ax2.set_ylabel(
+        "Music Genre"
+    )
 
-
-st.pyplot(
-    fig2
-)
-
+    st.pyplot(fig2)
 
 # ============================================================
 # VISUALIZATION 3
@@ -1144,22 +1138,26 @@ st.subheader(
     "3. Festival Attendance Distribution"
 )
 
+attendance_data = filtered_data[
+    "Attendance_Numbers"
+].dropna()
 
-fig3 = plot_histogram(
+if attendance_data.empty:
 
-    filtered_data,
+    st.info(
+        "No attendance data is available for the selected filters."
+    )
 
-    "Attendance_Numbers",
+else:
 
-    15,
+    fig3 = plot_histogram(
+        filtered_data,
+        "Attendance_Numbers",
+        15,
+        "Distribution of Festival Attendance"
+    )
 
-    "Distribution of Festival Attendance"
-)
-
-
-st.pyplot(
-    fig3
-)
+    st.pyplot(fig3)
 
 
 # ============================================================
